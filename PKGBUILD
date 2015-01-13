@@ -1,6 +1,3 @@
-# $Id: PKGBUILD 123274 2015-01-12 10:33:51Z speps $
-# Maintainer :
-# Contributor:
 
 pkgname=a2jmidid
 pkgver=8
