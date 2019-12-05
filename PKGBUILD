@@ -1,34 +1,25 @@
 
 pkgname=a2jmidid
-pkgver=8
+pkgver=9
 pkgrel=1
 pkgdesc="A daemon for exposing legacy ALSA sequencer applications in JACK MIDI system."
 arch=('x86_64')
 url="http://home.gna.org/$pkgname/"
-license=('GPL')
-depends=('jack' 'dbus-python2')
-source=("http://download.gna.org/$pkgname/$pkgname-$pkgver.tar.bz2"
-        "$pkgname-dso-pthread.patch")
-md5sums=('9cf4edbc3ad2ddeeaf6c8c1791ff3ddd'
-         '4b15e485301aee48371844cb01689ad2')
-
-prepare() {
-  cd $pkgname-$pkgver
-
-  # DSO link patch
-  patch -p1 -i ../$pkgname-dso-pthread.patch
-
-  # python2 shebang
-  sed -i 's/python/&2/' a2j_control
-}
+license=('GPL2')
+depends=('jack' 'dbus')
+makedepends=('meson')
+source=("https://github.com/linuxaudio/$pkgname/archive/$pkgver.tar.gz")
+sha512sums=('5bd13b6904ed68c5bfe40ca516fd49b7eb4d4a946b9908ee04687265848734c8e1a81579f0f1a5bd0752595be8858dc748da10487b7f366394c09a5ffc7d5e5c')
 
 build() {
   cd $pkgname-$pkgver
-  python2 waf configure --prefix=/usr
-  python2 waf
+  meson --prefix=/usr build
+  ninja -C build
 }
 
 package() {
   cd $pkgname-$pkgver
-  python2 waf install --destdir="$pkgdir/"
+  DESTDIR="${pkgdir}" meson install -C build
+  install -vDm 644 {AUTHORS,CHANGELOG,INSTALLATION,README}.rst \
+    -t "${pkgdir}/usr/share/doc/${pkgname}"
 }
